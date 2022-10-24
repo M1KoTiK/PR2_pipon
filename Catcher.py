@@ -1,6 +1,7 @@
 """Simple Monitors changes programm
 """
 import pathlib
+from pathlib import Path
 import argparse
 import subprocess
 from watchdog.observers import Observer
@@ -19,10 +20,10 @@ def check_and_print(string):
     print("", end = "\n")
     pass
 
-class FileWatcher(FileSystemEventHandler):
-    def on_created(self, evt):
-        if isinstance(evt, FileCreatedEvent):            
-            check_and_print((pathlib.Path.name(evt.src_path)))
+class FileChecker(FileSystemEventHandler):
+    def on_created(self, event):
+        if isinstance(event, FileCreatedEvent):  
+           check_and_print(Path(event.src_path).stem)      
     pass    
 
 def main():
@@ -42,9 +43,9 @@ def main():
         :3
     """     
     path = arguments.path 
-    eh = FileWatcher()
+    ev_handler = FileChecker()
     observer = Observer()
-    observer.schedule(eh, path, recursive=False)
+    observer.schedule(ev_handler, path, recursive=False)
     observer.start()
     try:
         while True:
